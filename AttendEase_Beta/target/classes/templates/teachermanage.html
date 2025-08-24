@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .top-corner {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .button-container {
+            text-align: center;
+            margin-top: 50px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-corner">
+        <button onclick="openLogin()">Logout</button>
+    </div>
+
+    <div class="button-container">
+        <button onclick="openLinkCCheck()">Check details of C</button>
+		<button onclick="openLinkCTake()">Take attendance of C</button>
+        <button onclick="openLinkBCheck()">Check details of B</button>
+		<button onclick="openLinkBTake()">Take attendance of B</button>
+		<button onclick="openaddstudent()">Add Student</button>
+    </div>
+
+    <script>
+        function openLogin() {
+            window.location.href = "http://localhost:8080/login";
+        }
+
+        function openLinkCCheck() {
+            window.open("http://localhost:8080/studentsdataC");
+        }
+		function openLinkCTake() {
+		            window.open("http://localhost:8080/selectattendoption");
+		        }
+
+        function openLinkBCheck() {
+            window.open("http://localhost:8080/studentsdataB");
+        }
+		function openLinkBTake() {
+		            window.open("http://localhost:8080/selectattendoption");
+		}
+		function openaddstudent() {
+				    window.open("http://localhost:8080/addstudent");
+	    }
+    </script>
+</body>
+</html>

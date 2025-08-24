@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Attendance</title>
+	<style>
+	        /* Basic Reset */
+	        * {
+	            margin: 0;
+	            padding: 0;
+	            box-sizing: border-box;
+	        }
+
+	        body {
+	            font-family: 'Arial', sans-serif;
+	            background-color: #f0f4f8;
+	            display: flex;
+	            justify-content: center;
+	            align-items: center;
+	            height: 100vh;
+	            margin: 0;
+	        }
+
+	        h1 {
+	            color: #333;
+	            margin-bottom: 20px;
+	            text-align: center;
+	        }
+
+	        form {
+	            background-color: #ffffff;
+	            padding: 30px;
+	            border-radius: 10px;
+	            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+	            width: 100%;
+	            max-width: 400px;
+	            text-align: center;
+	        }
+
+	        label {
+	            font-size: 16px;
+	            color: #555;
+	            margin-bottom: 10px;
+	            display: block;
+	        }
+
+	        input[type="text"] {
+	            width: 100%;
+	            padding: 12px;
+	            font-size: 14px;
+	            border: 2px solid #ccc;
+	            border-radius: 5px;
+	            margin-bottom: 20px;
+	            outline: none;
+	            transition: border-color 0.3s ease;
+	        }
+
+	        input[type="text"]:focus {
+	            border-color: #4CAF50;
+	        }
+
+	        button {
+	            padding: 12px 25px;
+	            font-size: 16px;
+	            background-color: #4CAF50;
+	            color: #fff;
+	            border: none;
+	            border-radius: 5px;
+	            cursor: pointer;
+	            transition: background-color 0.3s ease;
+	            width: 100%;
+	        }
+
+	        button:hover {
+	            background-color: #45a049;
+	        }
+
+	        button:active {
+	            background-color: #3e8e41;
+	        }
+
+	        /* Responsive Design */
+	        @media (max-width: 480px) {
+	            form {
+	                padding: 20px;
+	                width: 90%;
+	            }
+	            h1 {
+	                font-size: 24px;
+	            }
+	        }
+	    </style>
+</head>
+<body>
+    <h1>Mark Attendance By Absent  </h1>
+    <form id="attendanceForm">
+        <label for="serial">Enter serial number:</label><br>
+        <input type="text" id="serial" name="serial" placeholder="e.g., 1"><br><br>
+        <button type="button" onclick="submitAttendance()">Submit Attendance</button>
+    </form>
+
+    <script>
+        async function submitAttendance() {
+			const serialInput = document.getElementById('serial').value.trim();
+
+			// Validate the input
+			if (!serialInput) {
+			      alert('Please enter a valid serial number.');
+			      return;
+			}
+
+			// Split the serial numbers and remove extra spaces
+			const serialNumbers = serialInput.split(',').map(num => num.trim());
+
+			// Loop through each serial number
+			for (let i = 0; i < serialNumbers.length; i++) {
+			     const serial = serialNumbers[i];
+			     console.log(serial);
+
+			     try {
+			          // Fetch the ADP data from the API
+			          const response = await fetch('http://localhost:8080/adp');
+			          if (!response.ok) {
+			              throw new Error('Failed to fetch ADP data.');
+			          }
+			          const adp = await response.json();
+
+			          // Find the student by serial number
+			          const student = adp.find(student => student.serial !== serial); // Assuming `adp` is an array of student objects
+
+			          if (!student) {
+			              alert(`Student with serial number ${serial} not found.`);
+			              return;
+			          }
+
+			          // Update attendance
+			          const updatedStudent = {
+			                ...student,
+			                regno: parseInt(student.regno),  // Ensure regno is treated as an integer
+			                //sec: student.sec,
+			                //serial: student.serial,
+			                present: student.present + 1,     // Increment present count
+			                //total: student.total + 1         // Increment total count
+			          };
+
+			          // Send the updated student data to the server
+			          const postResponse = await fetch('http://localhost:8080/adp/store', {
+			                method: 'POST',
+			                headers: {
+			                'Content-Type': 'application/json',
+			          },
+			          body: JSON.stringify(updatedStudent),  // Send the updated data as an object
+			          });
+
+			          if (!postResponse.ok) {
+			              throw new Error('Failed to submit attendance.');
+			          }
+
+			          const result = await postResponse.json();
+			          console.log('Attendance submitted successfully:', result);
+			        
+			          } catch (error) {
+			          console.error('Error:', error);
+			          alert(`Error: ${error.message}`);
+			      }
+			 }
+			// Fetch data from the Spring REST API
+			fetch('http://localhost:8080/adp')
+			   .then(response => response.json())
+			   .then(data => {
+			       const tableBody = document.querySelector('#studentsTable tbody');
+			       data.forEach(adp => {
+			           // Update attendance
+			           const updatedadp = {
+			               ...adp,  // Spread operator to copy the existing properties of 'adp'
+			               regno: parseInt(adp.regno),  // Ensure regno is treated as an integer
+			               //sec: adp.sec,
+			               //serial: adp.serial,
+			               //present: adp.present,     // Increment present count (if necessary)
+			               total: adp.total + 1         // Increment total count
+			           };
+
+			           // Send the updated student data to the server
+			           fetch('http://localhost:8080/adp/store', {
+			               method: 'POST',
+			               headers: {
+			                   'Content-Type': 'application/json',
+			               },
+			               body: JSON.stringify(updatedadp),  // Send the updated data as an object
+			           })
+			           .then(postResponse => postResponse.json())
+			           .then(result => {
+			               console.log('Successfully updated:', result);
+			           })
+			           .catch(postError => console.error('Error posting data:', postError));
+			       });
+			   })
+			   .catch(error => console.error('Error fetching data:', error));
+			   alert('Attendance submitted successfully!');
+
+        }
+    </script>
+</body>
+</html>

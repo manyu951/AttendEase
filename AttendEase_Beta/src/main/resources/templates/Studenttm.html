@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header button {
+            background-color: #ff4d4d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        header button:hover {
+            background-color: #e60000;
+        }
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subject {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Student Attendance Details</h1>
+        <button onclick="logout()">Logout</button>
+    </header>
+
+    <div class="container">
+        <h2>General Details</h2>
+        <table id="studentTable">
+            <thead>
+                <tr>
+                    <th>Serial Number</th>
+                    <th>Name</th>
+                    <th>Registration Number</th>
+                    <th>Section</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div class="subject">
+            <h2>IML Subject Details</h2>
+            <table id="imlTable">
+                <thead>
+                    <tr>
+                        <th>Serial Number</th>
+                        <th>Total Classes</th>
+                        <th>Present</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="subject">
+            <h2>ADP Subject Details</h2>
+            <table id="adpTable">
+                <thead>
+                    <tr>
+                        <th>Serial Number</th>
+                        <th>Total Classes</th>
+                        <th>Present</th>
+                        <th>Percentage</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const apiUrls = {
+            students: "http://localhost:8080/students",
+            iml: "http://localhost:8080/iml",
+            adp: "http://localhost:8080/adp"
+        };
+
+        async function fetchAndPopulateData() {
+            try {
+                const [studentsResponse, imlResponse, adpResponse] = await Promise.all([
+                    fetch(apiUrls.students),
+                    fetch(apiUrls.iml),
+                    fetch(apiUrls.adp)
+                ]);
+
+                const students = await studentsResponse.json();
+                const imlData = await imlResponse.json();
+                const adpData = await adpResponse.json();
+
+                // Filter student by regno (as integer)
+                const filteredStudent = students.find(student => student.regno === 2141013054);  // Integer comparison
+
+                if (filteredStudent) {
+                    // Populate Student Table with filtered data
+                    const studentTable = document.getElementById('studentTable').querySelector('tbody');
+                    const row = `
+                        <tr>
+                            <td>${filteredStudent.serial}</td>
+                            <td>${filteredStudent.name}</td>
+                            <td>${filteredStudent.regno}</td>
+                            <td>${filteredStudent.sec}</td>
+                        </tr>`;
+                    studentTable.innerHTML += row;
+
+                    // Filter and populate IML Table for the specific student
+                    const imlTable = document.getElementById('imlTable').querySelector('tbody');
+                    const imlForStudent = imlData.filter(iml => iml.serial === filteredStudent.serial);
+                    imlForStudent.forEach(iml => {
+                        const percentage = ((iml.present / iml.total) * 100).toFixed(2);
+                        const row = `
+                            <tr>
+                                <td>${iml.serial}</td>
+                                <td>${iml.total}</td>
+                                <td>${iml.present}</td>
+                                <td>${percentage}%</td>
+                            </tr>`;
+                        imlTable.innerHTML += row;
+                    });
+
+                    // Filter and populate ADP Table for the specific student
+                    const adpTable = document.getElementById('adpTable').querySelector('tbody');
+                    const adpForStudent = adpData.filter(adp => adp.serial === filteredStudent.serial);
+                    adpForStudent.forEach(adp => {
+                        const percentage = ((adp.present / adp.total) * 100).toFixed(2);
+                        const row = `
+                            <tr>
+                                <td>${adp.serial}</td>
+                                <td>${adp.total}</td>
+                                <td>${adp.present}</td>
+                                <td>${percentage}%</td>
+                            </tr>`;
+                        adpTable.innerHTML += row;
+                    });
+                }
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        // Logout function
+        function logout() {
+            // You can add any specific logic for logout here, like redirecting to a login page
+            alert("You have logged out.");
+            window.location.href = "http://localhost:8080/login"; // Example redirect to login page
+        }
+
+        fetchAndPopulateData();
+    </script>
+</body>
+</html>

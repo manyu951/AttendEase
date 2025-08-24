@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .error-message {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+            var errorMessage = document.getElementById('errorMessage');
+            
+            // Clear any previous error message
+            errorMessage.textContent = '';
+
+            // Check credentials
+            if (username === 'adpsir' && password === '12345') {
+                // Redirect to page1 if adpsir logs in
+                window.location.href = 'http://localhost:8080/teachermanage';
+            } 
+			else if (username === 'manyu' || username === 'Manyu' && password === '12345') {
+                // Redirect to page2 if Manyu logs in
+                window.location.href = 'http://localhost:8080/studentmk';
+            }
+			else if (username === 'abhay' && password === '12345') {
+			    // Redirect to page2 if Manyu logs in
+			    window.location.href = 'http://localhost:8080/studentar';
+			}
+			else if (username === 'gopal' && password === '12345') {
+			    // Redirect to page2 if Manyu logs in
+			    window.location.href = 'http://localhost:8080/studentgg';
+			}
+			else if (username === 'tridev' && password === '12345') {
+			     // Redirect to page2 if Manyu logs in
+			     window.location.href = 'http://localhost:8080/studenttm';
+			}
+			else if (username === 'agnik' && password === '12345') {
+				// Redirect to page2 if Manyu logs in
+				window.location.href = 'http://localhost:8080/studentab';
+			}
+			
+			else {
+                // Show error message if credentials are incorrect
+                errorMessage.textContent = 'Invalid username or password';
+            }
+        });
+    </script>
+
+</body>
+</html>

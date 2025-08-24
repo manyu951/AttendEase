@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Student Data</title>
+</head>
+<body>
+    <h1>Submit Student Data</h1>
+    <form id="studentForm">
+        <label for="regno">Registration Number:</label>
+        <input type="text" id="regno" name="regno" required><br><br>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="sec">Section:</label>
+        <input type="text" id="sec" name="sec" required><br><br>
+
+        <label for="serial">Serial:</label>
+        <input type="text" id="serial" name="serial" required><br><br>
+
+        <button type="button" onclick="submitData()">Submit</button>
+    </form>
+
+    <script>
+        function submitData() {
+            const form = document.getElementById('studentForm');
+            const formData = new FormData(form);
+
+            const data = {
+                regno: formData.get('regno'),
+                name: formData.get('name'),
+                sec: formData.get('sec'),
+                serial: formData.get('serial')
+            };
+
+            fetch('http://localhost:8080/students/store', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert('Data submitted successfully!');
+                console.log(result);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to submit data.');
+            });
+        }
+    </script>
+</body>
+</html>
